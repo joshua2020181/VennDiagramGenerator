@@ -1,0 +1,5 @@
+# VennDiagramGenerator
+
+Requirements:
+- django
+- sympy
