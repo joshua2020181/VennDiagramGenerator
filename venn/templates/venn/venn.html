@@ -1,4 +1,5 @@
 <body>
+<button onclick="window.location.href = '/about';">Report</button>
 <div id="everything">
 
 <div class="inputDiv">
@@ -23,7 +24,7 @@
     <button onclick="symbol('symmetric')">Symmetric difference &#916</button>
     <button onclick="symbol('difference')">Difference -</button>
 </div>
-<br>
+<br> 
 
 
     <form action="/" method="post">
@@ -40,16 +41,19 @@
     </form>
 </div>
 <br>
-<div class="inputDiv">
+
 {% if cardinalities %}
+<div class="inputDiv">
 <span style="text-decoration: underline;">Set (cardinality): {values}</span>
-{% endif %}
+
 <div id='cardinalities' style="display: grid;">
 {% for s in cardinalities %}
 <span>{{s}}</span>
 {% endfor %}
 </div>
 </div>
+{% endif %}
+
 <br>
 <canvas class="myCanvas" width="500" height="500">
     <p>Your browser does not support Canvas</p>

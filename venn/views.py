@@ -7,6 +7,9 @@ import json
 
 # Create your views here.
 
+def about(request):
+    return render(request, 'venn/about.html', {})
+
 def index(request):
     context = {
         'userInput': None,
