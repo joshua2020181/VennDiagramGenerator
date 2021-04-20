@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-#5#*m094@=9u1l11b@zr4lpopjmq%mwx&$s4^c4z)l2x6uvdvs
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['http://chengjo.pythonanywhere.com/']
+ALLOWED_HOSTS = ['http://chengjo.pythonanywhere.com/', '127.0.0.1']
 
 
 # Application definition
@@ -124,3 +124,18 @@ STATIC_URL = '/static/'
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+import os
+BASE_DIR = os.path.dirname(os.path.dirname(__file__))
+STATIC_URL = '/static/'
+
+STATICFILES_DIRS = (
+    os.path.join(BASE_DIR, "static"),
+)
+
+MEDIA_ROOT = (
+BASE_DIR
+)
+
+
+MEDIA_URL = '/images/'
