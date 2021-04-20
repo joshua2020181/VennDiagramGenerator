@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseNotFound
 from .Circle import Circle
 from . import logicFuncs, makeVenn
 import json
@@ -33,7 +33,10 @@ def index(request):
                         list(map(lambda x: int(x.strip()), request.POST[k].split(',')))))
                     context[k] = request.POST[k]
             # sizes = list(map(lambda x: (x[0], len(x[1])), sets))
-            venn = makeVenn.makeVenn(request.POST['userInput'], sets)
+            try:
+                venn = makeVenn.makeVenn(request.POST['userInput'], sets)
+            except:
+                return HttpResponseNotFound("Error. Please try again.")   
             context['circles'] = venn['circles']
             context['pixelData'] = venn['imgData']
             context['cardinalities'] = venn['cardinalities']
