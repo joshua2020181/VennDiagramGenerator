@@ -1,0 +1,186 @@
+<body>
+<div id="everything">
+
+<div class="inputDiv">
+<H3 style="text-align: center;">Joshua's Venn Diagram Generator</H3>
+<span>Example: (A ∩ !(B ∪ C))</span><br>
+<span>Notes:</span>
+<ul>
+    <li>Only use capital letters A-Z</li>
+    <li>"Complement" is represented by a "!" before the variable</li>
+    <li>Have a space between operator and variable, unless using the "not(!)" operator</li>
+    <li>Please press "reset" before changing the input to something with a different number of sets</li>
+</ul>
+</div>
+<br>
+<div class="inputDiv">
+<div style="margin: auto;">
+    <button onclick="window.location.replace(location.href)">Reset</button>
+    <button onclick="symbol('union')">Union &#8746</button>
+    <button onclick="symbol('intersect')">Intersect &#8745</button>
+    <button onclick="symbol('not')">Not !</button>
+    <button onclick="symbol('symmetric')">Symmetric difference &#916</button>
+    <button onclick="symbol('difference')">Difference -</button>
+</div>
+<br>
+
+
+    <form action="/" method="post">
+        {% csrf_token %}
+        <label for="userInput">Input: </label>
+        <input type="text" id="userInput" name="userInput" value="{{userInput|default:""}}"><br>
+        <span>Universe: All real numbers &#8477</span><br> 
+        {% for c in circles %}
+            <label for="{{c.name}}_set">Values of { {{c.name}} }: </label>
+            <input type="text" name="{{c.name}}_set" value="{{c.circle.set_str}}"><br>
+        {% endfor %}
+        <br>
+        <input type="submit" type="Go">
+    </form>
+</div>
+<br>
+<div class="inputDiv">
+{% if cardinalities %}
+<span style="text-decoration: underline;">Set (cardinality): {values}</span>
+{% endif %}
+<div id='cardinalities' style="display: grid;">
+{% for s in cardinalities %}
+<span>{{s}}</span>
+{% endfor %}
+</div>
+</div>
+<br>
+<canvas class="myCanvas" width="500" height="500">
+    <p>Your browser does not support Canvas</p>
+</canvas>
+
+</div>
+
+</body>
+
+<style>
+#everything{
+    width: 600px;
+    margin: auto;
+    padding: 25px;
+    border-radius: 25px;
+    background: #D3D3D3;
+    border: 2px solid black;
+    
+}
+
+.inputDiv{
+    width: 550px;
+    padding: 5px;
+    border-radius: 10px;
+    background: #999999;
+    margin: auto;
+    border: 2px solid black;
+    box-sizing: border-box;
+}
+.myCanvas{
+    border: 2px solid #000000;
+    margin-left: 50px;
+    margin-right: auto;
+}
+
+</style>
+
+<script>
+    function insertAtCursor(myValue) {
+        myField = document.getElementById('userInput')
+        //IE support
+        if (document.selection) {
+            myField.focus();
+            sel = document.selection.createRange();
+            sel.text = myValue;
+        }
+        //MOZILLA and others
+        else if (myField.selectionStart || myField.selectionStart == '0') {
+            var startPos = myField.selectionStart;
+            var endPos = myField.selectionEnd;
+            myField.value = myField.value.substring(0, startPos)
+                + myValue
+                + myField.value.substring(endPos, myField.value.length);
+        } else {
+            myField.value += myValue;
+        }
+    }
+    function symbol(s){
+        if(s == 'union'){
+            insertAtCursor('∪');
+        } else if(s == 'intersect'){
+            insertAtCursor('∩');
+        } else if(s == 'not'){
+            insertAtCursor('!');
+        } else if(s == 'symmetric'){
+            insertAtCursor('Δ');
+        } else if(s == 'difference'){
+            insertAtCursor('-');
+        }
+    }
+
+    const canvas = document.querySelector('.myCanvas');
+    const width = 500;
+    const height = 500;
+    const ctx = canvas.getContext('2d');
+
+    ctx.fillStyle = 'rgb(255,255,255)';
+    ctx.fillRect(0,0,width,height);
+
+    function setColorAt(x, y, width, imgData, r, g, b, a) {
+        var red = y * (width * 4) + x * 4;
+        imgData.data[red] = r;
+        imgData.data[red+1] = g;
+        imgData.data[red+2] = b;
+        imgData.data[red+3] = a;
+    }
+
+    var myImageData = ctx.createImageData(width, height);
+    var loadedImgData = {{pixelData|escapejs}}
+    
+    for(var i = 0; i < width; i ++){
+        for(var j = 0; j < height; j ++){
+            setColorAt(i, j, width, myImageData, 
+            loadedImgData[i][j][0], loadedImgData[i][j][1], 
+            loadedImgData[i][j][2], loadedImgData[i][j][3]);
+        }
+    }
+
+    ctx.putImageData(myImageData, 0, 0);
+
+    var circles = JSON.parse("{{JSON|escapejs}}")
+    
+    for(var i = 0; i < circles.length; i ++){
+        document.getElementById('cardinalities').style.gridTemplateColumns += " auto "
+        ctx.font = "18px Arial";
+        ctx.fillStyle = "black";
+        if(circles[i]['x'] < 250 && circles[i]['y'] <= 250){
+            ctx.fillText(circles[i]['name'], circles[i]['x'] - (circles[i]['r'] + 10), circles[i]['y'] - (circles[i]['r'] + 10));
+        } else if(circles[i]['x'] >= 250 && circles[i]['y'] <= 250){
+            ctx.fillText(circles[i]['name'], circles[i]['x'] + (circles[i]['r'] + 10), circles[i]['y'] - (circles[i]['r'] + 10));
+        } else if(circles[i]['x'] >= 250 && circles[i]['y'] > 250){
+            ctx.fillText(circles[i]['name'], circles[i]['x'] + (circles[i]['r'] + 10), circles[i]['y'] + (circles[i]['r'] + 10));
+        } else {
+            ctx.fillText(circles[i]['name'], circles[i]['x'] - (circles[i]['r'] + 10), circles[i]['y'] + (circles[i]['r'] + 10));
+        }
+        ctx.beginPath();
+        ctx.arc(circles[i]['x'], circles[i]['y'], circles[i]['r'], 0, 2*Math.PI);
+        ctx.stroke()
+    }
+
+    var final = "{{final|escapejs}}"
+    var finalCardinality = "{{finalCardinality|escapejs}}"
+
+    if (circles.length > 0){
+        ctx.font = "16px Arial";
+        ctx.fillStyle = "black";
+        ctx.fillText("{{userInput}}: " + final, 10, 20);
+        ctx.fillText("Cardinality: " + finalCardinality, 10, 44);
+    }
+
+    
+
+
+
+</script>
