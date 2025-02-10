@@ -1,6 +1,7 @@
 # VennDiagramGenerator
 
 This is an online Venn Diagram generator to visualize overlapping sets. This was my final project submission for my Discrete Math class in Spring 2021. Below is an example.
+
 ![image](https://github.com/user-attachments/assets/d2b11ce5-19f0-4cf4-b4a7-5b8afa63f99a)
 
 
